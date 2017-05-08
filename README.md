@@ -2,5 +2,5 @@
 Intro to AI assignment 2
 Steven Taylor 7523890
 Meg
-Simon
+Simon Downs 2106809
 Simon
