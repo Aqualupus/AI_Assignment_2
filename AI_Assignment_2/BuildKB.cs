@@ -63,12 +63,13 @@ namespace AI_Assignment_2
 			List<string> allTheBits = new List<string>();
 			allTheBits = _kb.Split(';').ToList();
 			List<string> seperateMe = new List<string>();
+			Console.WriteLine("The knowledge base contains: ");
 			foreach (string s in allTheBits)
 			{
 				// breakdown does implication first giving A => B
 				// then it looks at A and checks if it contains any logical operators
 
-				//Console.WriteLine(s);
+				Console.WriteLine(s);
 				//get rid of any spaces
 
 				//is it an implication?
