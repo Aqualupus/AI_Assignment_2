@@ -81,35 +81,21 @@ namespace AI_Assignment_2
 					// right is the second part of the implication
 					string left = "";
 					string right = "";
-					bool after = false;
-					// c = character in s = string
-					foreach (char c in s)
-					{
-						if (after)
-						{
-							if (c != '>')
-								right += c;
-						}
-						else
-						{
-							if (c != '=')
-								left += c;
-						}
-						if (c == '=')
-						{
-							after = true;
-						}
 
-					}
+					string[] temp = s.Split('=');
+					left = temp[0];
+					right = temp[1];
+
 					left = left.TrimEnd(' ');
 					left = left.TrimStart(' ');
 					right = right.TrimEnd(' ');
 					right = right.TrimStart(' ');
+					right = right.TrimStart('>');
 					//Console.WriteLine("{0} and {1}", left, right);
 
 
 					//now parse the variables.
-					if (left.Length > 1)
+					if (left.Contains('&'))
 					{
 						//do stuff
 						seperateMe.Add(left);
@@ -121,7 +107,7 @@ namespace AI_Assignment_2
 						if (!Vars.Contains(left))
 							Vars.Add(left);
 					}
-					if (right.Length > 1)
+					if (right.Contains('&'))
 					{
 						//do stuff
 						seperateMe.Add(right);
@@ -145,26 +131,32 @@ namespace AI_Assignment_2
 					string newVar = "";
 					foreach (char c in sep)
 					{
-						if (c == '&')
+						if (c != ' ')
 						{
-							if (!Vars.Contains(newVar))
-								Vars.Add(newVar);							
-							newVar = "";
-						}
-						else
-						{
-							newVar += c.ToString();
-						}
-						if (newVar != "")
-						{
-							if (!Vars.Contains(newVar))
-								Vars.Add(newVar);
+							if (c == '&')
+							{
+								if (!Vars.Contains(newVar))
+									Vars.Add(newVar);
+								newVar = "";
+							}
+							else
+							{
+								newVar += c.ToString();
+							}
+							//if (newVar != "")
+							//{
+							//	if (!Vars.Contains(newVar))
+							//		Vars.Add(newVar);
+							//}
 						}
 					}
+					if (!Vars.Contains(newVar))
+									Vars.Add(newVar);
 
 				}
 				//just plain true variables
-				if (s.Length <= 3)
+				//so. I want to see if there are any spec chars in here at all.
+				if (!s.Contains("&") && !s.Contains("=>"))
 				{
 					string temp;
 					temp = s.TrimStart(' ');
@@ -174,7 +166,9 @@ namespace AI_Assignment_2
 
 				//what are the variables? ¬
 				//this bit is going to get messy
+
 				//some variable names are many chars long so don't break them
+
 			}
 		
 			Console.WriteLine("*******************\n Variables");
