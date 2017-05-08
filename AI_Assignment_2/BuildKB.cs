@@ -56,7 +56,8 @@ namespace AI_Assignment_2
 		/// </summary>
 		private void build()
 		{
-			//					   and imply negate neg  EI     neg  union
+			
+			// and imply negate neg  EI     neg  union
 			string specChars =  "& => ¬ ^ <=> ! ||";
 			//first split them up into statements and variables
 			List<string> allTheBits = new List<string>();
@@ -64,6 +65,9 @@ namespace AI_Assignment_2
 			List<string> seperateMe = new List<string>();
 			foreach (string s in allTheBits)
 			{
+				// breakdown does implication first giving A => B
+				// then it looks at A and checks if it contains any logical operators
+
 				//Console.WriteLine(s);
 				//get rid of any spaces
 
@@ -72,8 +76,12 @@ namespace AI_Assignment_2
 				{
 					Implies.Add(s);
 					//Console.WriteLine(s);
+
+					// left is the first part of the implication
+					// right is the second part of the implication
 					string left = "";
 					string right = "";
+
 					string[] temp = s.Split('=');
 					left = temp[0];
 					right = temp[1];
@@ -156,12 +164,10 @@ namespace AI_Assignment_2
 					TrueVars.Add(temp);
 				}
 
-
 				//what are the variables? ¬
 				//this bit is going to get messy
-				//some variable names are >2 chars long so don't break them
 
-
+				//some variable names are many chars long so don't break them
 
 			}
 		
