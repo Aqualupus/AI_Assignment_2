@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace AI_Assignment_2
 {
@@ -9,9 +9,10 @@ namespace AI_Assignment_2
 			//Console.WriteLine("Hello World!");
 
 			//this obvioulsy needs to be better
-			BuildKB KB = new BuildKB("test2.txt");
 
-			TruthTable TT = new TruthTable(KB.Implies, KB.Vars,KB.TrueVars, "reptile");
+			BuildKB KB = new BuildKB("apple.txt");
+
+			TruthTable TT = new TruthTable(KB.Implies, KB.Vars,KB.TrueVars, "apple");
 
 			Console.WriteLine(TT.BuildTT());
 			Console.ReadLine();

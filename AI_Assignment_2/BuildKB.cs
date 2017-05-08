@@ -68,7 +68,7 @@ namespace AI_Assignment_2
 				// breakdown does implication first giving A => B
 				// then it looks at A and checks if it contains any logical operators
 
-				//Console.WriteLine(s);
+				Console.WriteLine(s);
 				//get rid of any spaces
 
 				//is it an implication?
