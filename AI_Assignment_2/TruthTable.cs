@@ -36,6 +36,8 @@ namespace AI_Assignment_2
 		/// <returns>The tab.</returns>
 		public string TruTab()
 		{
+			int howmany = 0;
+			bool madeit = false;
 			foreach (string s in Vars)
 			{
 				Console.Write("{0}\t",s);
@@ -46,8 +48,8 @@ namespace AI_Assignment_2
 			int maxsize = (int)Math.Pow(2, Vars.Count);
 			bool[,] TT = new bool[Vars.Count,maxsize ];
 			int i, j, k;
-			i = 1;
-			j = 1;
+			i = 0;
+			j = 0;
 			bool flip = true;
 
 			//fill the array by looping over it and filling normally
@@ -57,6 +59,7 @@ namespace AI_Assignment_2
 
 				for (int l = 0; l < maxsize; l++)
 				{
+					if (j == 0) j++;
 					if (l == i)
 					{
 						i = l + j;
@@ -64,21 +67,43 @@ namespace AI_Assignment_2
 					}
 					TT[k, l] = flip;
 				}
-				j+=2;
+				j+=j;
 				i = j-1;
 			}
-
-			//printing the array to the console. Remove this later.
-			for (k = 0; k <  maxsize; k++)
+			int rownum = -1; //Vars.FindIndex(;
+			for (i = 0; i < Vars.Count;i++)
 			{
-				for (int l = Vars.Count-1; l >= 0;l--)
-				{
-					Console.Write("{0}\t",TT[l, k]);
-				}
-				Console.WriteLine();
-
+				if (Vars[i] == ask) rownum = i;
 			}
+			if (rownum > -1)
+			{
+				for (i = 0; i < maxsize; i++)
+				{
+					if (TT[rownum, i])
+					{
+						for (j = 0; j < Vars.Count; j++)
+						{
+							if (!TT[j, i]) break;
+							if (TT[j, i] && (j == Vars.Count-1))
+							{
+								howmany++;
+								madeit = true;
+							}
+						}
+					}
+				}
+			}
+			//printing the array to the console. Remove this later.
+			//for (k = 0; k <  maxsize; k++)
+			//{
+			//	for (int l = Vars.Count-1; l >= 0;l--)
+			//	{
+			//		Console.Write("{0}\t",TT[l, k]);
+			//	}
+			//	Console.WriteLine();
 
+			//}
+			result = madeit + " " + howmany;
 			return result;
 		}
 		/// <summary>
