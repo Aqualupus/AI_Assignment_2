@@ -8,11 +8,16 @@ namespace AI_Assignment_2
 
 		private List<string> Implies = new List<string>();
 		private List<string> Vars = new List<string>();
-		private List<string> TT = new List<string>();
+		//private List<string> TT = new List<string>();
 		List<string> TrueVars;
 
 		private string ask;
 
+		/// <summary>
+		/// check if the variable is true. If not look deeper
+		/// </summary>
+		/// <returns>The deeper.</returns>
+		/// <param name="check">Check.</param>
 		private bool deeper(string check)
 		{
 			foreach (string s in TrueVars)
@@ -25,6 +30,57 @@ namespace AI_Assignment_2
 			return false;
 		}
 
+		/// <summary>
+		/// Trus the tab.
+		/// </summary>
+		/// <returns>The tab.</returns>
+		public string TruTab()
+		{
+			foreach (string s in Vars)
+			{
+				Console.Write("{0}\t",s);
+			}
+			Console.WriteLine();
+			Console.WriteLine("**************************************************************************************");
+			string result = "No";
+			int maxsize = (int)Math.Pow(2, Vars.Count);
+			bool[,] TT = new bool[Vars.Count,maxsize ];
+			int i, j, k;
+			i = 1;
+			j = 1;
+			bool flip = true;
+
+			//fill the array by looping over it and filling normally
+			for (k = 0; k <  Vars.Count; k++)
+			{
+				flip = false;
+
+				for (int l = 0; l < maxsize; l++)
+				{
+					if (l == i)
+					{
+						i = l + j;
+						flip = !flip;
+					}
+					TT[k, l] = flip;
+				}
+				j+=2;
+				i = j-1;
+			}
+
+			//printing the array to the console. Remove this later.
+			for (k = 0; k <  maxsize; k++)
+			{
+				for (int l = Vars.Count-1; l >= 0;l--)
+				{
+					Console.Write("{0}\t",TT[l, k]);
+				}
+				Console.WriteLine();
+
+			}
+
+			return result;
+		}
 		/// <summary>
 		/// Builds the Truth Table.
 		/// </summary>
