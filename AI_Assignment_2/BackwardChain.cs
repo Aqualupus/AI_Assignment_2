@@ -30,34 +30,39 @@ namespace AI_Assignment_2
 
 				Console.WriteLine("Check if Implies Statement: " + s + " contains: " + check);
 
-				//looks for the ask variable in the known True variables.
+				//looks for the check variable in Horn clauses.
 				if (s.Contains(check))
 				{
-					Console.WriteLine("Found that: " + s + " contains: " + check);
+                    Console.WriteLine("Found that: " + s + " contains: " + check);
 
 					temp = s.Split('=');              //separate variables into temp string array
 					temp[1] = temp[1].TrimStart('>'); //strip second element of ">"
 					temp[1] = temp[1].TrimStart(' ');
 
-                    // Find Parameter that matches implicit Horn clause driver, set to True
-                    // If already True, report to Console
-                    foreach (Parameter p in Params){
-                        if(p.GetName()==temp[0]){
-                            if(p.GetState()){
-                                Console.WriteLine("Attempted: " + p.GetName() + " = " + "True. Already True.");
-                            }
-                            else{
-                                Console.WriteLine("Setting to True: " + temp[0]);
-                                p.SetState(true);
-                                TrueParams.Push(temp[0]);
-                                TruthCount++;
+                    //Validate if matched on right of Horn clause
+                    if(temp[1].Contains(check)){
+                        
+  		                // Find Parameter that matches implicit Horn clause driver, set to True
+		                // If already True, report to Console
+		                foreach (Parameter p in Params){
+		                    if(p.GetName()==temp[0]){
+		                        if(p.GetState()){
+		                            Console.WriteLine("Attempted: " + p.GetName() + " = " + "True. Already True.");
+		                        }
+		                        
+		                        else{
+		                            Console.WriteLine("Setting to True: " + temp[0]);
+		                            p.SetState(true);
+		                            TrueParams.Push(temp[0]);
+		                            TruthCount++;
 
-                                //Add the identified True parameter to the Validate queue
-                                Validate.Push(temp[0]);
-                                Console.WriteLine("Adding to Validate stack: " + temp[0]);
+		                            //Add the identified True parameter to the Validate queue
+		                            Validate.Push(temp[0]);
+		                            Console.WriteLine("Adding to Validate stack: " + temp[0]);
 
-                            }
-                        }
+		                        }
+		                    }
+		                }
                     }
 				}
 			}
