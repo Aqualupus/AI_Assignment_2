@@ -12,6 +12,19 @@ namespace AI_Assignment_2
 		List<string> TrueVars;
 
 		private string ask;
+
+		private bool deeper(string check)
+		{
+			foreach (string s in TrueVars)
+			{
+				if (s == check)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
 		/// <summary>
 		/// Builds the Truth Table.
 		/// </summary>
@@ -35,7 +48,12 @@ namespace AI_Assignment_2
 					if (temp[1] == ask)
 					{
 						levels++;
-						result += "yes";
+						//result += "yes";
+						if (deeper(ask))
+						{
+							result = "Yes " + levels;
+							break;
+						}
 						nextlvl = temp[0].TrimStart(' ');
 						lookDeeper = true;
 						break;
@@ -66,8 +84,12 @@ namespace AI_Assignment_2
 					howdeep++;
 				}
 
-				result = "Yes " + levels;
+				result = "No ";
 			}
+			if (deeper(ask))
+						{
+							result = "Yes " + levels;
+						}
 			foreach (string s in TrueVars)
 				{
 
@@ -75,6 +97,7 @@ namespace AI_Assignment_2
 					{
 						levels++;
 						result = "Yes " + levels;
+						break;
 					}
 
 				}
