@@ -13,10 +13,12 @@ namespace AI_Assignment_2
 			BuildKB KB = new BuildKB("test1.txt");
 
 			TruthTable TT = new TruthTable(KB.Implies, KB.Vars,KB.TrueVars, "d");
-
 			Console.WriteLine(TT.TruTab());
-			Console.ReadLine();
 
+			BackwardChain BC = new BackwardChain(KB.Implies, KB.Vars, KB.TrueVars, "d");
+           
+			
+			Console.ReadLine();
 		}
 	}
 }
