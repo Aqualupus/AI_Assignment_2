@@ -8,11 +8,16 @@ namespace AI_Assignment_2
 
 		private List<string> Implies = new List<string>();
 		private List<string> Vars = new List<string>();
-		private List<string> TT = new List<string>();
+		//private List<string> TT = new List<string>();
 		List<string> TrueVars;
 
 		private string ask;
 
+		/// <summary>
+		/// check if the variable is true. If not look deeper
+		/// </summary>
+		/// <returns>The deeper.</returns>
+		/// <param name="check">Check.</param>
 		private bool deeper(string check)
 		{
 			foreach (string s in TrueVars)
@@ -25,6 +30,82 @@ namespace AI_Assignment_2
 			return false;
 		}
 
+		/// <summary>
+		/// Trus the tab.
+		/// </summary>
+		/// <returns>The tab.</returns>
+		public string TruTab()
+		{
+			int howmany = 0;
+			bool madeit = false;
+			foreach (string s in Vars)
+			{
+				Console.Write("{0}\t",s);
+			}
+			Console.WriteLine();
+			Console.WriteLine("**************************************************************************************");
+			string result = "No";
+			int maxsize = (int)Math.Pow(2, Vars.Count);
+			bool[,] TT = new bool[Vars.Count,maxsize ];
+			int i, j, k;
+			i = 0;
+			j = 0;
+			bool flip = true;
+
+			//fill the array by looping over it and filling normally
+			for (k = 0; k <  Vars.Count; k++)
+			{
+				flip = false;
+
+				for (int l = 0; l < maxsize; l++)
+				{
+					if (j == 0) j++;
+					if (l == i)
+					{
+						i = l + j;
+						flip = !flip;
+					}
+					TT[k, l] = flip;
+				}
+				j+=j;
+				i = j-1;
+			}
+			int rownum = -1; //Vars.FindIndex(;
+			for (i = 0; i < Vars.Count;i++)
+			{
+				if (Vars[i] == ask) rownum = i;
+			}
+			if (rownum > -1)
+			{
+				for (i = 0; i < maxsize; i++)
+				{
+					if (TT[rownum, i])
+					{
+						for (j = 0; j < Vars.Count; j++)
+						{
+							if (!TT[j, i]) break;
+							if (TT[j, i] && (j == Vars.Count-1))
+							{
+								howmany++;
+								madeit = true;
+							}
+						}
+					}
+				}
+			}
+			//printing the array to the console. Remove this later.
+			//for (k = 0; k <  maxsize; k++)
+			//{
+			//	for (int l = Vars.Count-1; l >= 0;l--)
+			//	{
+			//		Console.Write("{0}\t",TT[l, k]);
+			//	}
+			//	Console.WriteLine();
+
+			//}
+			result = madeit + " " + howmany;
+			return result;
+		}
 		/// <summary>
 		/// Builds the Truth Table.
 		/// </summary>
