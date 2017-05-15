@@ -9,10 +9,11 @@ namespace AI_Assignment_2
 
 		private List<string> Implies = new List<string>();
 		private List<string> Vars = new List<string>();
-		//private List<string> TT = new List<string>();
+		private List<string> CondVars = new List<string>();
 		List<string> TrueVars;
 
 		private string ask;
+		private int askplace;
 
 		/// <summary>
 		/// check if the variable is true. If not look deeper
@@ -65,7 +66,7 @@ namespace AI_Assignment_2
 			for (k = 0; k <  Vars.Count; k++)
 			{
 				flip = false;
-
+				if (Vars[k] == ask) askplace = k;
 				for (int l = 0; l < maxsize; l++)
 				{
 					if (j == 0) j++;
@@ -86,70 +87,171 @@ namespace AI_Assignment_2
 
 				List<string> splitem = Implies[i].Split('=').ToList();
 				splitem[1] = splitem[1].TrimStart('>');
-				splitem.Add("");
-				splitem.Add("");
+				splitem.Add("-1");
+				splitem.Add("-1");
+				splitem.Add("-1");
+				splitem.Add("-1");
 				imp.Add(splitem);
 
 			}
+
 			//work out where in the list of variables the implies are
 			for (i = 0; i < Vars.Count; i++)
 			{
 				foreach (List<string> s in imp)
 				{
-					if (s[0] == Vars[i]) s[2] = i.ToString();
+					if (s[0].Contains("&"))
+					{
+						string[] temp = s[0].Split('&');
+						s[2] = "&";
+						if (temp[0] == Vars[i]) s[4] = i.ToString();
+						if (temp[1] == Vars[i]) s[5] = i.ToString();
+					}
+					else if (s[0].Contains("|"))
+					{
+						string[] temp = s[0].Split('|');
+						s[2] = "|";
+						if (temp[0] == Vars[i]) s[4] = i.ToString();
+						if (temp[1] == Vars[i]) s[5] = i.ToString();
+					}
+					else
+					{
+
+						if (s[0] == Vars[i]) s[2] = i.ToString();
+					}
 					if (s[1] == Vars[i]) s[3] = i.ToString();
 				}
 			}
+			//is it a 2 variable value or 3?
+			bool norm = true;
 			for (k = 0; k < maxsize; k++)
 			{
 				i = Vars.Count;
 				foreach (List<string> s in imp)
 				{
+					
 					int numval1;
 					int numval2;
-					Int32.TryParse(s[2], out numval1);
+					int numval3;
+					int numval4;
+					norm = Int32.TryParse(s[2], out numval1);
 					Int32.TryParse(s[3], out numval2);
-					bool debug = false;
-
-					for (j = 0; j < maxsize; j++)
+					if (norm)
 					{
-						if (TT[numval1, j] && (TT[numval2, j]))
+						
+						for (j = 0; j < maxsize; j++)
 						{
-							TT[i, j] = true;
-						if(debug)	Console.Write("{0} & {1} T\t", Vars[numval1], Vars[numval2]);
-						}else
-						if(!TT[numval1, j] && (TT[numval2, j]))
-						{
-							TT[i, j] = true;
-							if(debug)	Console.Write("{0} & {1} T\t", Vars[numval1], Vars[numval2]);
-						}else
-						if (!TT[numval1, j] && (!TT[numval2, j]))
-						{
-							TT[i, j] = true;
-							if(debug)	Console.Write("{0} & {1} T\t", Vars[numval1], Vars[numval2]);
-						}
-						else
-						{
-							TT[i, j] = false;
-							if(debug)	Console.Write("{0} & {1} F\t", Vars[numval1], Vars[numval2]);
+							if (TT[numval1, j] && (TT[numval2, j]))
+							{
+								TT[i, j] = true;
+							}
+							else
+							if (!TT[numval1, j] && (TT[numval2, j]))
+							{
+								TT[i, j] = true;
+							}
+							else
+							if (!TT[numval1, j] && (!TT[numval2, j]))
+							{
+								TT[i, j] = true;
+							}
+							else
+							{
+								TT[i, j] = false;
+							}
 						}
 					}
-					if(debug) Console.WriteLine("new Line");
+					if (!norm)
+					{
+						bool conditional = false;
+						Int32.TryParse(s[4], out numval1);	//the first of the conditions
+						Int32.TryParse(s[5], out numval3);  //the second of the conditions
+						if (s[2] == "&")
+						{
+							for (j = 0; j < maxsize; j++)
+							{
+								if (TT[numval1, j] && TT[numval3, j])
+								{
+									conditional = true;
+								}
+							}
+							for (j = 0; j < maxsize; j++)
+							{
+								if (conditional && (TT[numval2, j]))
+								{
+								TT[i, j] = true;
+								}
+								else
+									if (!conditional && (TT[numval2, j]))
+								{
+									TT[i, j] = true;
+								}
+								else
+										if (!conditional && (!TT[numval2, j]))
+								{
+									TT[i, j] = true;
+								}
+								else
+								{
+									TT[i, j] = false;
+								}
+							}
+						}
+					}
+					i++;
+				}
+			}
+			//be true to yourself people. Life lessons is what we learn here.
+			List<int> truetoyourself = new List<int>();
+			foreach (string s in TrueVars)
+			{
+				i = 0;
+				foreach (string t in Vars)
+				{
+					if (s == t) truetoyourself.Add(i);
 					i++;
 				}
 			}
 			//here I need to check the KB
 			for (j = 0; j < maxsize; j++)
 			{
-				for (i = Vars.Count; i < Vars.Count + imp.Count; i++)
+				bool allthethings = false;
+				//checking all the true variables are true
+				foreach (int r in truetoyourself)
 				{
-					//do stuff
-					//do I need to do BC first and then follow it back?!?!
+					allthethings = TT[r, j];
+					if (!allthethings) break;
 				}
+				//checking the asked variable and that the others also got through
+				if (TT[askplace, j] && allthethings)
+				{
+					
+					for (i = Vars.Count-1; i < Vars.Count + imp.Count; i++)
+					{
+
+						allthethings = TT[i, j];
+
+						if (!allthethings)
+						{
+							break;
+						}
+
+					}
+				
+
+				}
+					//if it's gotten all the way through all of these things it should tick the howmany box
+				if (allthethings)
+				{
+					howmany++;
+					madeit = true;
+				}
+				TT[TT.GetUpperBound(0), j] = allthethings;
+
 			}
 
 				//printing the array to the console. Remove this later.
-			for (int l = 0; l<Vars.Count + imp.Count ;l++){
+			for (int l = 0; l<TT.GetUpperBound(0) +1 ;l++){
 					Console.Write("{0}\t",l);
 				}
 			Console.WriteLine();
@@ -157,13 +259,13 @@ namespace AI_Assignment_2
 			{
 				//for (int l = Vars.Count + imp.Count-1; l >= 0;l--)
 				//Console.Write(k);
-				for (int l = 0; l < Vars.Count + imp.Count ;l++){
+				for (int l = 0; l < TT.GetUpperBound(0)+1;l++){
 					Console.Write("{0}\t",TT[l, k]);
 				}
 				Console.WriteLine("\t{0}",k);
 
 			}
-			result = madeit + " " + howmany;
+			result = madeit + ": " + howmany;
 			return result;
 		}
 		/// <summary>
@@ -245,12 +347,13 @@ namespace AI_Assignment_2
 			return result;
 		}
 
-		public TruthTable(List<string> imp, List<string> vari, List<string> _truevars, string asking)
+		public TruthTable(List<string> imp, List<string> vari, List<string> _truevars, List<string> _condvar,string asking)
 		{
 			Implies = imp;
 			Vars = vari;
 			ask = asking;
 			TrueVars = _truevars;
+			CondVars = _condvar;
 			//BuildTT();
 		}
 	}

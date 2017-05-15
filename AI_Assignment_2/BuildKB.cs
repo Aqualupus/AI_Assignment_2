@@ -15,6 +15,7 @@ namespace AI_Assignment_2
 		//not too keen on using a list for this. Can't really think of anything better though. 
 		public List<string> Implies = new List<string>();
 		public List<string> Vars = new List<string>();
+		public List<string> CondVars = new List<string>();
 		public List<string> TrueVars = new List<string>();
 
 		/// <summary>
@@ -79,7 +80,8 @@ namespace AI_Assignment_2
 						temp += s[i].ToString();
 					}
 				}
-				//Console.WriteLine("<{0}>", s);
+				//temp = temp.TrimStart(' ');
+				//Console.WriteLine("<{0}>", temp);
 				movehere.Add(temp);
 
 			}
@@ -94,41 +96,54 @@ namespace AI_Assignment_2
 					Implies.Add(s);
 					string[] splitem = s.Split('=');
 					splitem[1] = splitem[1].TrimStart('>');
-					if (!Vars.Contains(splitem[0]))
+					if (!Vars.Contains(splitem[0]) && !splitem[0].Contains("&") && !splitem[0].Contains("|") )
 						Vars.Add(splitem[0]);
-					if (!Vars.Contains(splitem[1]))
+					if (!Vars.Contains(splitem[1]) && !splitem[1].Contains("&") && !splitem[1].Contains("|"))
 						Vars.Add(splitem[1]);
 					//split them at the and
 					if (splitem[0].Contains("&"))
 					{
+						CondVars.Add(splitem[0]);
 						string[] temp = splitem[0].Split('&');
+						if (!Vars.Contains(temp[0]))
 						Vars.Add(temp[0]);
+						if (!Vars.Contains(temp[1]))
 						Vars.Add(temp[1]);
 					}
 					if (splitem[1].Contains("&"))
 					{
+						CondVars.Add(splitem[1]);
 						string[] temp = splitem[1].Split('&');
-						Vars.Add(temp[0]);
+						if (!Vars.Contains(temp[0]))
+							Vars.Add(temp[0]);
+						if (!Vars.Contains(temp[1]))
 						Vars.Add(temp[1]);
 					}
 					//split them at the or
 					if (splitem[0].Contains("|"))
 					{
+						CondVars.Add(splitem[0]);
 						string[] temp = splitem[0].Split('|');
+						if (!Vars.Contains(temp[0]))
 						Vars.Add(temp[0]);
+						if (!Vars.Contains(temp[1]))
 						Vars.Add(temp[1]);
 					}
 					if (splitem[1].Contains("|"))
 					{
+						CondVars.Add(splitem[1]);
 						string[] temp = splitem[1].Split('|');
+						if (!Vars.Contains(temp[0]))
 						Vars.Add(temp[0]);
+						if (!Vars.Contains(temp[1]))
 						Vars.Add(temp[1]);
 					}
 
 				}
 				else
 				{
-					TrueVars.Add(s);
+					if (!Vars.Contains(s)) Vars.Add(s);
+					if(!TrueVars.Contains(s)) TrueVars.Add(s);
 				}
 			}
 
