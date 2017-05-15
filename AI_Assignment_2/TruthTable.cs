@@ -49,12 +49,13 @@ namespace AI_Assignment_2
 			{
 				Console.Write("{0}\t",s);
 			}
+			Console.Write("KB");
 			Console.WriteLine();
 			Console.WriteLine("**************************************************************************************");
 			string result = "No";
 			int maxsize = (int)Math.Pow(2, Vars.Count);
 			//the table is the variables plus the implications 
-			bool[,] TT = new bool[Vars.Count+Implies.Count,maxsize ];
+			bool[,] TT = new bool[Vars.Count+Implies.Count+1,maxsize ];
 			int i, j, k;
 			i = 0;
 			j = 0;
@@ -137,107 +138,15 @@ namespace AI_Assignment_2
 					i++;
 				}
 			}
-			//bool var1 = false;
-			//bool var2 = false;
-			//work out where in the list of variables the implies are
-			//for (i = 0;i <  Vars.Count; i++)
-			//{
-			//	foreach (List<string> s in imp)
-			//	{
-			//		if (s[0] == Vars[i]) s[2] = i.ToString();
-			//		if (s[1] == Vars[i]) s[3] = i.ToString();
-			//	}
-			//}
-			//i = Vars.Count;
-			//foreach (List<string> s in imp)
-			//{
-			//	int numval1;
-			//	int numval2;
-			//	Int32.TryParse(s[2], out numval1);
-			//	Int32.TryParse(s[3], out numval2);
-
-			//	for (j = 0; j < maxsize; j++)
-			//	{
-			//		if (TT[numval1, j] && (TT[numval2, j]))
-			//		{
-			//			TT[i, j] = true;
-			//		}
-			//		if(!TT[numval1, j] && (TT[numval2, j]))
-			//		{
-			//			TT[i, j] = true;
-			//		}
-			//		if (!TT[numval1, j] && (!TT[numval2, j]))
-			//		{
-			//			TT[i, j] = true;
-			//		}
-			//		else
-			//		{
-			//			TT[i, j] = false;
-			//		}
-			//	}
-			//	i++;
-			//}
-			//for (i = Vars.Count; i < Vars.Count + imp.Count; i++)
-			//{
-			//	int rownum1 = -1;
-			//	int rownum2 = -1;
-			//	for (j = 0; j < Vars.Count; j++)
-			//	{
-			//		//find them in the vars list
-			//		if (Vars[j] == imp[i-Vars.Count][0]) rownum1 = j;
-			//		if (Vars[j] == imp[i-Vars.Count][1]) rownum2 = j;
-			//	}
-			//	//it exists get the values
-			//	if ((rownum1 > -1) && (rownum2 > -1))
-			//	{
-			//		//look at it from the rows perspective
-			//		for (j = 0; j < maxsize; j++)
-			//		{
-			//			for (k = 0; k < Vars.Count; k++)
-			//			{
-			//				if ((k == rownum1) && (TT[k, j])) var1 = true;
-			//				if ((k == rownum2) && (TT[k, j])) var2 = true;
-
-				//			}
-				//			if (var1 && !var2)
-				//				{
-				//					TT[i, j] = false;
-				//				//Console.Write("{0} value is {1}", Vars[k],TT[i, j] );
-				//				}
-				//				else
-				//				{
-				//					TT[i, j] = true;
-				//				}
-				//			//Console.Write("{0} value is {1}", Vars[k],TT[i, j] );
-
-				//		}
-				//	}
-
-				//}
-
-				//int rownum = -1;
-				//for (i = 0; i < Vars.Count;i++)
-				//{
-				//	if (Vars[i] == ask) rownum = i;
-				//}
-				//if (rownum > -1)
-				//{
-				//	for (i = 0; i < maxsize; i++)
-				//	{
-				//		if (TT[rownum, i])
-				//		{
-				//			for (j = 0; j < Vars.Count; j++)
-				//			{
-				//				if (!TT[j, i]) break;
-				//				if (TT[j, i] && (j == Vars.Count-1))
-				//				{
-				//					howmany++;
-				//					madeit = true;
-				//				}
-				//			}
-				//		}
-				//	}
-				//}
+			//here I need to check the KB
+			for (j = 0; j < maxsize; j++)
+			{
+				for (i = Vars.Count; i < Vars.Count + imp.Count; i++)
+				{
+					//do stuff
+					//do I need to do BC first and then follow it back?!?!
+				}
+			}
 
 				//printing the array to the console. Remove this later.
 			for (int l = 0; l<Vars.Count + imp.Count ;l++){
