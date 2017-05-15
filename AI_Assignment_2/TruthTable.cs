@@ -41,14 +41,14 @@ namespace AI_Assignment_2
 			int howmany = 0;
 			bool madeit = false;
 			List<List<string>> imp = new List<List<string>>();
-		
+
 			foreach (string s in Vars)
 			{
-				Console.Write("{0}\t",s);
+				Console.Write("{0}\t", s);
 			}
-				foreach (string s in Implies)
+			foreach (string s in Implies)
 			{
-				Console.Write("{0}\t",s);
+				Console.Write("{0}\t", s);
 			}
 			Console.Write("KB");
 			Console.WriteLine();
@@ -56,17 +56,34 @@ namespace AI_Assignment_2
 			string result = "No";
 			int maxsize = (int)Math.Pow(2, Vars.Count);
 			//the table is the variables plus the implications 
-			bool[,] TT = new bool[Vars.Count+Implies.Count+1,maxsize ];
+			bool[,] TT = new bool[Vars.Count + Implies.Count + 1, maxsize];
 			int i, j, k;
 			i = 0;
 			j = 0;
+			askplace = -1;
 			bool flip = true;
+			foreach (string s in Vars)
+			{
+				i++;
+				if (s == ask)
+				{
+					askplace = i-1;
+					break;
+				}
 
+
+			}
+
+			if(askplace == -1)
+			{
+				return "Error in ASK";
+			}
+			i = 0;
 			//fill the array by looping over it and filling normally
-			for (k = 0; k <  Vars.Count; k++)
+			for (k = 0; k < Vars.Count; k++)
 			{
 				flip = false;
-				if (Vars[k] == ask) askplace = k;
+
 				for (int l = 0; l < maxsize; l++)
 				{
 					if (j == 0) j++;
@@ -77,8 +94,8 @@ namespace AI_Assignment_2
 					}
 					TT[k, l] = flip;
 				}
-				j+=j;
-				i = j-1;
+				j += j;
+				i = j - 1;
 			}
 			//here I fill the implies at the end of the table
 			for (i = 0; i < Implies.Count; i++)
@@ -124,82 +141,82 @@ namespace AI_Assignment_2
 			}
 			//is it a 2 variable value or 3?
 			bool norm = true;
-			for (k = 0; k < maxsize; k++)
+			i = Vars.Count;
+			foreach (List<string> s in imp)
 			{
-				i = Vars.Count;
-				foreach (List<string> s in imp)
+
+				int numval1;
+				int numval2;
+				int numval3;
+				//int numval4;
+				//if it's not an int then there 2 3 values
+				norm = Int32.TryParse(s[2], out numval1);
+				Int32.TryParse(s[3], out numval2);
+				if (norm)
 				{
-					
-					int numval1;
-					int numval2;
-					int numval3;
-					int numval4;
-					norm = Int32.TryParse(s[2], out numval1);
-					Int32.TryParse(s[3], out numval2);
-					if (norm)
+
+					for (j = 0; j < maxsize; j++)
 					{
-						
-						for (j = 0; j < maxsize; j++)
-						{
-							if (TT[numval1, j] && (TT[numval2, j]))
-							{
-								TT[i, j] = true;
-							}
-							else
-							if (!TT[numval1, j] && (TT[numval2, j]))
-							{
-								TT[i, j] = true;
-							}
-							else
-							if (!TT[numval1, j] && (!TT[numval2, j]))
-							{
-								TT[i, j] = true;
-							}
-							else
+						if (TT[numval1, j] && (!TT[numval2, j]))
 							{
 								TT[i, j] = false;
 							}
-						}
-					}
-					if (!norm)
-					{
-						bool conditional = false;
-						Int32.TryParse(s[4], out numval1);	//the first of the conditions
-						Int32.TryParse(s[5], out numval3);  //the second of the conditions
-						if (s[2] == "&")
-						{
-							for (j = 0; j < maxsize; j++)
+							else
 							{
-								if (TT[numval1, j] && TT[numval3, j])
-								{
-									conditional = true;
-								}
-							}
-							for (j = 0; j < maxsize; j++)
-							{
-								if (conditional && (TT[numval2, j]))
-								{
 								TT[i, j] = true;
-								}
-								else
-									if (!conditional && (TT[numval2, j]))
-								{
-									TT[i, j] = true;
-								}
-								else
-										if (!conditional && (!TT[numval2, j]))
-								{
-									TT[i, j] = true;
-								}
-								else
-								{
-									TT[i, j] = false;
-								}
+							}
+					}
+				}
+				//not normal. figure out what the conditions are.
+				if (!norm)
+				{
+					
+					Int32.TryParse(s[4], out numval1);  //the first of the conditions
+					Int32.TryParse(s[5], out numval3);  //the second of the conditions
+				
+					if (s[2] == "&")	//and then.....
+					{
+						for (j = 0; j < maxsize; j++)
+						{
+							bool conditional = false;
+							if (TT[numval1, j] && TT[numval3, j])
+							{
+								conditional = true;
+							}
+
+							if (conditional && (!TT[numval2, j]))
+							{
+								TT[i, j] = false;
+							}
+							else
+							{
+								TT[i, j] = true;
 							}
 						}
 					}
-					i++;
+
+					if (s[2] == "|")	//or then.....
+					{
+						for (j = 0; j < maxsize; j++)
+						{
+							bool conditional = false;
+							if (TT[numval1, j] || TT[numval3, j])
+							{
+								conditional = true;
+							}
+
+							if (conditional && (!TT[numval2, j]))
+							{
+								TT[i, j] = false;
+							}
+							else
+							{
+								TT[i, j] = true;
+							}
+						}
+					}
 				}
+				i++;
 			}
 			//be true to yourself people. Life lessons is what we learn here.
 			List<int> truetoyourself = new List<int>();
@@ -223,10 +240,10 @@ namespace AI_Assignment_2
 					if (!allthethings) break;
 				}
 				//checking the asked variable and that the others also got through
-				if (TT[askplace, j] && allthethings)
+				if ((TT[askplace, j]) && (allthethings))
 				{
-					
-					for (i = Vars.Count-1; i < Vars.Count + imp.Count; i++)
+
+					for (i = Vars.Count; i < TT.GetUpperBound(0) ; i++)
 					{
 
 						allthethings = TT[i, j];
@@ -237,34 +254,44 @@ namespace AI_Assignment_2
 						}
 
 					}
-				
-
-				}
 					//if it's gotten all the way through all of these things it should tick the howmany box
-				if (allthethings)
-				{
-					howmany++;
-					madeit = true;
+
+					if (allthethings)
+					{
+						howmany++;
+						madeit = true;
+					}
+					TT[TT.GetUpperBound(0), j] = allthethings;
 				}
-				TT[TT.GetUpperBound(0), j] = allthethings;
+
+
 
 			}
 
-				//printing the array to the console. Remove this later.
-			for (int l = 0; l<TT.GetUpperBound(0) +1 ;l++){
-					Console.Write("{0}\t",l);
-				}
+			//printing the array to the console. Remove this later.
+			for (int l = 0; l < TT.GetUpperBound(0) + 1; l++)
+			{
+				Console.Write("{0}\t", l);
+			}
 			Console.WriteLine();
-				for (k = 0; k <  maxsize; k++)
+			for (k = 0; k < maxsize; k++)
 			{
 				//for (int l = Vars.Count + imp.Count-1; l >= 0;l--)
 				//Console.Write(k);
-				for (int l = 0; l < TT.GetUpperBound(0)+1;l++){
-					Console.Write("{0}\t",TT[l, k]);
+				//print only the ones that are true
+				if (TT[TT.GetUpperBound(0), k])
+				{
+					for (int l = 0; l <= TT.GetUpperBound(0); l++)
+					{
+						Console.Write("{0}\t", TT[l, k]);
+					}
+					Console.WriteLine("\t{0}", k);
 				}
-				Console.WriteLine("\t{0}",k);
+
 
 			}
+			//Console.WriteLine(TT[Vars.Count-1,0]);
+			Console.WriteLine("Ask {0}",Vars[askplace]);
 			result = madeit + ": " + howmany;
 			return result;
 		}
