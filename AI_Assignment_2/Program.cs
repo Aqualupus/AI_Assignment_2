@@ -12,11 +12,11 @@ namespace AI_Assignment_2
 
 			BuildKB KB = new BuildKB("test2.txt");
 
-			TruthTable TT = new TruthTable(KB.Implies, KB.Vars,KB.TrueVars,KB.CondVars, "reptile");
-
+			TruthTable TT = new TruthTable(KB.Implies, KB.Vars,KB.TrueVars, "reptile");
 			Console.WriteLine(TT.TruTab());
-			Console.ReadLine();
 
+			BackwardChain BC = new BackwardChain(KB.Implies, KB.Vars, KB.TrueVars, "d");
+			Console.ReadLine();
 		}
 	}
 }
