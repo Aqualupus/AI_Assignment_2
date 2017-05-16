@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AI_Assignment_2
 {
@@ -8,10 +9,11 @@ namespace AI_Assignment_2
 
 		private List<string> Implies = new List<string>();
 		private List<string> Vars = new List<string>();
-		//private List<string> TT = new List<string>();
+		private List<string> CondVars = new List<string>();
 		List<string> TrueVars;
 
 		private string ask;
+		private int askplace;
 
 		/// <summary>
 		/// check if the variable is true. If not look deeper
@@ -38,22 +40,47 @@ namespace AI_Assignment_2
 		{
 			int howmany = 0;
 			bool madeit = false;
+			List<List<string>> imp = new List<List<string>>();
+
 			foreach (string s in Vars)
 			{
-				Console.Write("{0}\t",s);
+				Console.Write("{0}\t", s);
 			}
+			foreach (string s in Implies)
+			{
+				Console.Write("{0}\t", s);
+			}
+			Console.Write("KB");
 			Console.WriteLine();
 			Console.WriteLine("**************************************************************************************");
 			string result = "No";
 			int maxsize = (int)Math.Pow(2, Vars.Count);
-			bool[,] TT = new bool[Vars.Count,maxsize ];
+			//the table is the variables plus the implications 
+			bool[,] TT = new bool[Vars.Count + Implies.Count + 1, maxsize];
 			int i, j, k;
 			i = 0;
 			j = 0;
+			askplace = -1;
 			bool flip = true;
+			foreach (string s in Vars)
+			{
+				i++;
+				if (s == ask)
+				{
+					askplace = i-1;
+					break;
+				}
 
+
+			}
+
+			if(askplace == -1)
+			{
+				return "Error in ASK";
+			}
+			i = 0;
 			//fill the array by looping over it and filling normally
-			for (k = 0; k <  Vars.Count; k++)
+			for (k = 0; k < Vars.Count; k++)
 			{
 				flip = false;
 
@@ -67,43 +94,205 @@ namespace AI_Assignment_2
 					}
 					TT[k, l] = flip;
 				}
-				j+=j;
-				i = j-1;
+				j += j;
+				i = j - 1;
 			}
-			int rownum = -1; //Vars.FindIndex(;
-			for (i = 0; i < Vars.Count;i++)
+			//here I fill the implies at the end of the table
+			for (i = 0; i < Implies.Count; i++)
 			{
-				if (Vars[i] == ask) rownum = i;
+				//first I need to check for what variables are in the equation
+
+				List<string> splitem = Implies[i].Split('=').ToList();
+				splitem[1] = splitem[1].TrimStart('>');
+				splitem.Add("-1");
+				splitem.Add("-1");
+				splitem.Add("-1");
+				splitem.Add("-1");
+				imp.Add(splitem);
+
 			}
-			if (rownum > -1)
+
+			//work out where in the list of variables the implies are
+			for (i = 0; i < Vars.Count; i++)
 			{
-				for (i = 0; i < maxsize; i++)
+				foreach (List<string> s in imp)
 				{
-					if (TT[rownum, i])
+					if (s[0].Contains("&"))
 					{
-						for (j = 0; j < Vars.Count; j++)
-						{
-							if (!TT[j, i]) break;
-							if (TT[j, i] && (j == Vars.Count-1))
+						string[] temp = s[0].Split('&');
+						s[2] = "&";
+						if (temp[0] == Vars[i]) s[4] = i.ToString();
+						if (temp[1] == Vars[i]) s[5] = i.ToString();
+					}
+					else if (s[0].Contains("|"))
+					{
+						string[] temp = s[0].Split('|');
+						s[2] = "|";
+						if (temp[0] == Vars[i]) s[4] = i.ToString();
+						if (temp[1] == Vars[i]) s[5] = i.ToString();
+					}
+					else
+					{
+
+						if (s[0] == Vars[i]) s[2] = i.ToString();
+					}
+					if (s[1] == Vars[i]) s[3] = i.ToString();
+				}
+			}
+			//is it a 2 variable value or 3?
+			bool norm = true;
+			i = Vars.Count;
+			foreach (List<string> s in imp)
+			{
+
+				int numval1;
+				int numval2;
+				int numval3;
+				//int numval4;
+				//if it's not an int then there 2 3 values
+				norm = Int32.TryParse(s[2], out numval1);
+				Int32.TryParse(s[3], out numval2);
+				if (norm)
+				{
+
+					for (j = 0; j < maxsize; j++)
+					{
+						if (TT[numval1, j] && (!TT[numval2, j]))
 							{
-								howmany++;
-								madeit = true;
+								TT[i, j] = false;
+							}
+							else
+							{
+								TT[i, j] = true;
+							}
+					}
+				}
+				//not normal. figure out what the conditions are.
+				if (!norm)
+				{
+					
+					Int32.TryParse(s[4], out numval1);  //the first of the conditions
+					Int32.TryParse(s[5], out numval3);  //the second of the conditions
+				
+					if (s[2] == "&")	//and then.....
+					{
+						for (j = 0; j < maxsize; j++)
+						{
+							bool conditional = false;
+							if (TT[numval1, j] && TT[numval3, j])
+							{
+								conditional = true;
+							}
+
+							if (conditional && (!TT[numval2, j]))
+							{
+								TT[i, j] = false;
+							}
+							else
+							{
+								TT[i, j] = true;
+							}
+						}
+					}
+
+					if (s[2] == "|")	//or then.....
+					{
+						for (j = 0; j < maxsize; j++)
+						{
+							bool conditional = false;
+							if (TT[numval1, j] || TT[numval3, j])
+							{
+								conditional = true;
+							}
+
+							if (conditional && (!TT[numval2, j]))
+							{
+								TT[i, j] = false;
+							}
+							else
+							{
+								TT[i, j] = true;
 							}
 						}
 					}
 				}
+				i++;
 			}
-			//printing the array to the console. Remove this later.
-			//for (k = 0; k <  maxsize; k++)
-			//{
-			//	for (int l = Vars.Count-1; l >= 0;l--)
-			//	{
-			//		Console.Write("{0}\t",TT[l, k]);
-			//	}
-			//	Console.WriteLine();
+			//be true to yourself people. Life lessons is what we learn here.
+			List<int> truetoyourself = new List<int>();
+			foreach (string s in TrueVars)
+			{
+				i = 0;
+				foreach (string t in Vars)
+				{
+					if (s == t) truetoyourself.Add(i);
+					i++;
+				}
+			}
+			//here I need to check the KB
+			for (j = 0; j < maxsize; j++)
+			{
+				bool allthethings = false;
+				//checking all the true variables are true
+				foreach (int r in truetoyourself)
+				{
+					allthethings = TT[r, j];
+					if (!allthethings) break;
+				}
+				//checking the asked variable and that the others also got through
+				if ((TT[askplace, j]) && (allthethings))
+				{
 
-			//}
-			result = madeit + " " + howmany;
+					for (i = Vars.Count; i < TT.GetUpperBound(0) ; i++)
+					{
+
+						allthethings = TT[i, j];
+
+						if (!allthethings)
+						{
+							break;
+						}
+
+					}
+					//if it's gotten all the way through all of these things it should tick the howmany box
+
+					if (allthethings)
+					{
+						howmany++;
+						madeit = true;
+					}
+					TT[TT.GetUpperBound(0), j] = allthethings;
+				}
+
+
+
+			}
+
+			//printing the array to the console. Remove this later.
+			for (int l = 0; l < TT.GetUpperBound(0) + 1; l++)
+			{
+				Console.Write("{0}\t", l);
+			}
+			Console.WriteLine();
+			for (k = 0; k < maxsize; k++)
+			{
+				//for (int l = Vars.Count + imp.Count-1; l >= 0;l--)
+				//Console.Write(k);
+				//print only the ones that are true
+				if (TT[TT.GetUpperBound(0), k])
+				{
+					for (int l = 0; l <= TT.GetUpperBound(0); l++)
+					{
+						Console.Write("{0}\t", TT[l, k]);
+					}
+					Console.WriteLine("\t{0}", k);
+				}
+
+
+			}
+			//Console.WriteLine(TT[Vars.Count-1,0]);
+			Console.WriteLine("Ask {0}",Vars[askplace]);
+			result = madeit + ": " + howmany;
 			return result;
 		}
 		/// <summary>
@@ -185,12 +374,13 @@ namespace AI_Assignment_2
 			return result;
 		}
 
-		public TruthTable(List<string> imp, List<string> vari, List<string> _truevars, string asking)
+		public TruthTable(List<string> imp, List<string> vari, List<string> _truevars, List<string> _condvar,string asking)
 		{
 			Implies = imp;
 			Vars = vari;
 			ask = asking;
 			TrueVars = _truevars;
+			CondVars = _condvar;
 			//BuildTT();
 		}
 	}
