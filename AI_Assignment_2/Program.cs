@@ -10,12 +10,19 @@ namespace AI_Assignment_2
 
 			//this obvioulsy needs to be better
 
-			BuildKB KB = new BuildKB("test2.txt");
 
-			TruthTable TT = new TruthTable(KB.Implies, KB.Vars,KB.TrueVars, "reptile");
-			Console.WriteLine(TT.TruTab());
+	//		BuildKB KB = new BuildKB("test2.txt");
 
-			BackwardChain BC = new BackwardChain(KB.Implies, KB.Vars, KB.TrueVars, "d");
+
+			BuildKB KB = new BuildKB("test1.txt");
+			//first the list of implies. then the variables then the true variables, then the conditional variables
+			//then the debug mode and then the ask
+			//TruthTable TT = new TruthTable(KB.Implies, KB.Vars, KB.TrueVars, KB.CondVars, true,KB.ASK());
+
+
+			//Console.WriteLine(TT.TruTab());
+
+			BackwardChain BC = new BackwardChain(KB.Implies, KB.Vars, KB.TrueVars, KB.ASK());
 			Console.ReadLine();
 		}
 	}

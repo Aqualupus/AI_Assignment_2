@@ -18,6 +18,10 @@ namespace AI_Assignment_2
 		public List<string> CondVars = new List<string>();
 		public List<string> TrueVars = new List<string>();
 
+		public string ASK()
+		{
+			return _ask;
+		}
 		/// <summary>
 		/// Parses the Knowledge Base from the text file.
 		/// </summary>
@@ -96,27 +100,29 @@ namespace AI_Assignment_2
 					Implies.Add(s);
 					string[] splitem = s.Split('=');
 					splitem[1] = splitem[1].TrimStart('>');
+					splitem[0] = splitem[0].TrimStart('!');
+					splitem[1] = splitem[1].TrimStart('!');
 					if (!Vars.Contains(splitem[0]) && !splitem[0].Contains("&") && !splitem[0].Contains("|") )
 						Vars.Add(splitem[0]);
-					if (!Vars.Contains(splitem[1]) && !splitem[1].Contains("&") && !splitem[1].Contains("|"))
+					if (!Vars.Contains(splitem[1]) && !splitem[1].Contains("&") && !splitem[1].Contains("|") && !splitem[1].Contains('!')) 
 						Vars.Add(splitem[1]);
 					//split them at the and
 					if (splitem[0].Contains("&"))
 					{
 						CondVars.Add(splitem[0]);
 						string[] temp = splitem[0].Split('&');
-						if (!Vars.Contains(temp[0]))
+						if (!Vars.Contains(temp[0]) && !temp[0].Contains('!'))
 						Vars.Add(temp[0]);
-						if (!Vars.Contains(temp[1]))
+						if (!Vars.Contains(temp[1]) && !temp[1].Contains('!'))
 						Vars.Add(temp[1]);
 					}
 					if (splitem[1].Contains("&"))
 					{
 						CondVars.Add(splitem[1]);
 						string[] temp = splitem[1].Split('&');
-						if (!Vars.Contains(temp[0]))
+						if (!Vars.Contains(temp[0]) && !temp[0].Contains('!'))
 							Vars.Add(temp[0]);
-						if (!Vars.Contains(temp[1]))
+						if (!Vars.Contains(temp[1]) && !temp[1].Contains('!'))
 						Vars.Add(temp[1]);
 					}
 					//split them at the or
@@ -124,26 +130,29 @@ namespace AI_Assignment_2
 					{
 						CondVars.Add(splitem[0]);
 						string[] temp = splitem[0].Split('|');
-						if (!Vars.Contains(temp[0]))
+						if (!Vars.Contains(temp[0]) && !temp[0].Contains('!'))
 						Vars.Add(temp[0]);
-						if (!Vars.Contains(temp[1]))
+						if (!Vars.Contains(temp[1]) && !temp[1].Contains('!'))
 						Vars.Add(temp[1]);
 					}
 					if (splitem[1].Contains("|"))
 					{
 						CondVars.Add(splitem[1]);
 						string[] temp = splitem[1].Split('|');
-						if (!Vars.Contains(temp[0]))
+						if (!Vars.Contains(temp[0]) && !temp[0].Contains('!'))
 						Vars.Add(temp[0]);
-						if (!Vars.Contains(temp[1]))
+						if (!Vars.Contains(temp[1])&& !temp[1].Contains('!'))
 						Vars.Add(temp[1]);
 					}
 
 				}
 				else
 				{
-					if (!Vars.Contains(s)) Vars.Add(s);
-					if(!TrueVars.Contains(s)) TrueVars.Add(s);
+					if (!s.Contains('!'))
+					{
+						if (!Vars.Contains(s)) Vars.Add(s);
+						if (!TrueVars.Contains(s)) TrueVars.Add(s);
+					}
 				}
 			}
 

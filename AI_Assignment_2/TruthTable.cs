@@ -13,7 +13,10 @@ namespace AI_Assignment_2
 		List<string> TrueVars;
 
 		private string ask;
+		private string trueask;
+		private bool negate = true;
 		private int askplace;
+		private bool debug;
 
 		/// <summary>
 		/// check if the variable is true. If not look deeper
@@ -41,18 +44,20 @@ namespace AI_Assignment_2
 			int howmany = 0;
 			bool madeit = false;
 			List<List<string>> imp = new List<List<string>>();
-
-			foreach (string s in Vars)
+			if (debug)
 			{
-				Console.Write("{0}\t", s);
+				foreach (string s in Vars)
+				{
+					Console.Write("{0}\t", s);
+				}
+				foreach (string s in Implies)
+				{
+					Console.Write("{0}\t", s);
+				}
+				Console.Write("KB");
+				Console.WriteLine();
+				Console.WriteLine("**************************************************************************************");
 			}
-			foreach (string s in Implies)
-			{
-				Console.Write("{0}\t", s);
-			}
-			Console.Write("KB");
-			Console.WriteLine();
-			Console.WriteLine("**************************************************************************************");
 			string result = "No";
 			int maxsize = (int)Math.Pow(2, Vars.Count);
 			//the table is the variables plus the implications 
@@ -62,6 +67,11 @@ namespace AI_Assignment_2
 			j = 0;
 			askplace = -1;
 			bool flip = true;
+			if (ask.Contains('!'))
+			{
+				ask = ask.TrimStart('!');
+				negate = false;
+			}
 			foreach (string s in Vars)
 			{
 				i++;
@@ -104,10 +114,14 @@ namespace AI_Assignment_2
 
 				List<string> splitem = Implies[i].Split('=').ToList();
 				splitem[1] = splitem[1].TrimStart('>');
-				splitem.Add("-1");
-				splitem.Add("-1");
-				splitem.Add("-1");
-				splitem.Add("-1");
+				splitem.Add("-1");							//2 the operator or the value
+				splitem.Add("-1");							//3 The second value
+				splitem.Add("-1");							//4	the left side of the operator
+				splitem.Add("-1");							//5 the right side of the operator
+				splitem.Add("-1");							//6 the right side is not'd
+				splitem.Add("-1");							//7 the left side is not'd
+				splitem.Add("-1");							//8 the implied side is not'd
+
 				imp.Add(splitem);
 
 			}
@@ -121,20 +135,56 @@ namespace AI_Assignment_2
 					{
 						string[] temp = s[0].Split('&');
 						s[2] = "&";
+
+						if (temp[0].Contains('!'))
+						{
+							//do a thing here.
+							s[6] = "false";
+							temp[0] = temp[0].TrimStart('!');
+						}
 						if (temp[0] == Vars[i]) s[4] = i.ToString();
+
+						if (temp[1].Contains('!'))
+						{
+							//do a thing here.
+							s[7] = "false";
+							temp[1] = temp[1].Trim('!');
+						}
 						if (temp[1] == Vars[i]) s[5] = i.ToString();
 					}
 					else if (s[0].Contains("|"))
 					{
 						string[] temp = s[0].Split('|');
 						s[2] = "|";
+						if (temp[0].Contains('!'))
+						{
+							//do a thing here.
+							s[6] = "false";
+							temp[0] = temp[0].TrimStart('!');
+						}
 						if (temp[0] == Vars[i]) s[4] = i.ToString();
+
+						if (temp[1].Contains('!'))
+						{
+							//do a thing here.
+							s[7] = "false";
+							temp[1] = temp[1].Trim('!');
+						}
 						if (temp[1] == Vars[i]) s[5] = i.ToString();
 					}
 					else
 					{
-
+						if (s[0].Contains('!'))
+						{
+							s[6] = "false";
+							s[0] = s[0].TrimStart('!');
+						}
 						if (s[0] == Vars[i]) s[2] = i.ToString();
+					}
+					if (s[1].Contains('!'))
+					{
+						s[8] = "false";
+						s[1] = s[1].TrimStart('!');
 					}
 					if (s[1] == Vars[i]) s[3] = i.ToString();
 				}
@@ -152,12 +202,17 @@ namespace AI_Assignment_2
 				//if it's not an int then there 2 3 values
 				norm = Int32.TryParse(s[2], out numval1);
 				Int32.TryParse(s[3], out numval2);
+
 				if (norm)
 				{
 
 					for (j = 0; j < maxsize; j++)
 					{
-						if (TT[numval1, j] && (!TT[numval2, j]))
+						bool firstvar = TT[numval1, j];
+						bool implicat = TT[numval2, j];
+							if (s[6] == "false") firstvar = !firstvar;
+							if (s[8] == "false") implicat = !implicat;
+						if ((firstvar) && (!implicat))
 							{
 								TT[i, j] = false;
 							}
@@ -179,12 +234,18 @@ namespace AI_Assignment_2
 						for (j = 0; j < maxsize; j++)
 						{
 							bool conditional = false;
-							if (TT[numval1, j] && TT[numval3, j])
+							bool firstvar = TT[numval1, j];
+							bool secondvar = TT[numval3, j];
+							bool implicat = TT[numval2, j];
+							if (s[6] == "false") firstvar = !firstvar;
+							if (s[7] == "false") secondvar = !secondvar;
+							if (s[8] == "false") implicat = !implicat;
+							if (( firstvar ) && ( secondvar ))
 							{
 								conditional = true;
 							}
 
-							if (conditional && (!TT[numval2, j]))
+							if (conditional && !(implicat ))
 							{
 								TT[i, j] = false;
 							}
@@ -200,12 +261,18 @@ namespace AI_Assignment_2
 						for (j = 0; j < maxsize; j++)
 						{
 							bool conditional = false;
-							if (TT[numval1, j] || TT[numval3, j])
+							bool firstvar = TT[numval1, j];
+							bool secondvar = TT[numval3, j];
+							bool implicat = TT[numval2, j];
+							if (s[6] == "false") firstvar = !firstvar;
+							if (s[7] == "false") secondvar = !secondvar;
+							if (s[8] == "false") implicat = !implicat;
+							if ((firstvar) || (secondvar))
 							{
 								conditional = true;
 							}
 
-							if (conditional && (!TT[numval2, j]))
+							if (conditional && !(implicat))
 							{
 								TT[i, j] = false;
 							}
@@ -239,8 +306,10 @@ namespace AI_Assignment_2
 					allthethings = TT[r, j];
 					if (!allthethings) break;
 				}
+				bool asked = TT[askplace, j];
+				if (!negate) asked = !asked;
 				//checking the asked variable and that the others also got through
-				if ((TT[askplace, j]) && (allthethings))
+				if (((asked)) && (allthethings))
 				{
 
 					for (i = Vars.Count; i < TT.GetUpperBound(0) ; i++)
@@ -269,29 +338,32 @@ namespace AI_Assignment_2
 			}
 
 			//printing the array to the console. Remove this later.
-			for (int l = 0; l < TT.GetUpperBound(0) + 1; l++)
+			if (debug)
 			{
-				Console.Write("{0}\t", l);
-			}
-			Console.WriteLine();
-			for (k = 0; k < maxsize; k++)
-			{
-				//for (int l = Vars.Count + imp.Count-1; l >= 0;l--)
-				//Console.Write(k);
-				//print only the ones that are true
-				if (TT[TT.GetUpperBound(0), k])
+				for (int l = 0; l < TT.GetUpperBound(0) + 1; l++)
 				{
-					for (int l = 0; l <= TT.GetUpperBound(0); l++)
-					{
-						Console.Write("{0}\t", TT[l, k]);
-					}
-					Console.WriteLine("\t{0}", k);
+					Console.Write("{0}\t", l);
 				}
+				Console.WriteLine();
+				for (k = 0; k < maxsize; k++)
+				{
+					//for (int l = Vars.Count + imp.Count-1; l >= 0;l--)
+					//Console.Write(k);
+					//print only the ones that are true
+					if (TT[TT.GetUpperBound(0), k])
+					{
+						for (int l = 0; l <= TT.GetUpperBound(0); l++)
+						{
+							Console.Write("{0}\t", TT[l, k]);
+						}
+						Console.WriteLine("\t{0}", k);
+					}
 
 
+				}
+				//Console.WriteLine(TT[Vars.Count-1,0]);
+				Console.WriteLine("Ask {0}",trueask);
 			}
-			//Console.WriteLine(TT[Vars.Count-1,0]);
-			Console.WriteLine("Ask {0}",Vars[askplace]);
 			result = madeit + ": " + howmany;
 			return result;
 		}
@@ -374,13 +446,23 @@ namespace AI_Assignment_2
 			return result;
 		}
 
-		public TruthTable(List<string> imp, List<string> vari, List<string> _truevars, List<string> _condvar,string asking)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:AI_Assignment_2.TruthTable"/> class.
+		/// </summary>
+		/// <param name="imp">Imp.</param>
+		/// <param name="vari">Vari.</param>
+		/// <param name="_truevars">Truevars.</param>
+		/// <param name="_condvar">Condvar.</param>
+		/// <param name="asking">Asking.</param>
+		public TruthTable(List<string> imp, List<string> vari, List<string> _truevars, List<string> _condvar,bool show,string asking)
 		{
 			Implies = imp;
 			Vars = vari;
 			ask = asking;
+			trueask = asking;
 			TrueVars = _truevars;
 			CondVars = _condvar;
+			debug = show;
 			//BuildTT();
 		}
 	}
