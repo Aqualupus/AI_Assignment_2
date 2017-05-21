@@ -364,7 +364,9 @@ namespace AI_Assignment_2
 				//Console.WriteLine(TT[Vars.Count-1,0]);
 				Console.WriteLine("Ask {0}",trueask);
 			}
-			result = madeit + ": " + howmany;
+			string finesimonyouareright = "YES";
+			if (!madeit) finesimonyouareright = "NO";
+			result = finesimonyouareright + ": " + howmany;
 			return result;
 		}
 		/// <summary>

@@ -22,6 +22,11 @@ namespace AI_Assignment_2
 
         private int TruthCount;
 
+		/// <summary>
+		/// Finds the truth.
+		/// </summary>
+		/// <returns><c>true</c>, if the truth was found, <c>false</c> otherwise.</returns>
+		/// <param name="check">Check.</param>
         private Boolean findTheTruth(string check){
             List<string> result = new List<string>();
             string[] temp;
