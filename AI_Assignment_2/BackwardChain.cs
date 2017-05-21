@@ -9,6 +9,7 @@ namespace AI_Assignment_2
         private List<string> Vars = new List<string>();
         private List<Parameter> Params = new List<Parameter>();
         private Stack<string> TrueParams = new Stack<string>();
+		private bool debug;
 
         List<string> TrueVars;
 
@@ -28,12 +29,12 @@ namespace AI_Assignment_2
 			foreach (string s in Implies)
 			{
 
-				Console.WriteLine("Check if Implies Statement: " + s + " contains: " + check);
+				if(debug) Console.WriteLine("Check if Implies Statement: " + s + " contains: " + check);
 
 				//looks for the check variable in Horn clauses.
 				if (s.Contains(check))
 				{
-                    Console.WriteLine("Found that: " + s + " contains: " + check);
+                  if(debug)   Console.WriteLine("Found that: " + s + " contains: " + check);
 
 					temp = s.Split('=');              //separate variables into temp string array
 					temp[1] = temp[1].TrimStart('>'); //strip second element of ">"
@@ -47,18 +48,18 @@ namespace AI_Assignment_2
 		                foreach (Parameter p in Params){
 		                    if(p.GetName()==temp[0]){
 		                        if(p.GetState()){
-		                            Console.WriteLine("Attempted: " + p.GetName() + " = " + "True. Already True.");
+		                          if(debug)   Console.WriteLine("Attempted: " + p.GetName() + " = " + "True. Already True.");
 		                        }
 		                        
 		                        else{
-		                            Console.WriteLine("Setting to True: " + temp[0]);
+		                           if(debug)  Console.WriteLine("Setting to True: " + temp[0]);
 		                            p.SetState(true);
 		                            TrueParams.Push(temp[0]);
 		                            TruthCount++;
 
 		                            //Add the identified True parameter to the Validate queue
 		                            Validate.Push(temp[0]);
-		                            Console.WriteLine("Adding to Validate stack: " + temp[0]);
+		                          if(debug)   Console.WriteLine("Adding to Validate stack: " + temp[0]);
 
 		                        }
 		                    }
@@ -72,31 +73,32 @@ namespace AI_Assignment_2
 
         public string BuildTT()
         {
+			if (debug)
+			{
+				Console.WriteLine("Parameters");
+				foreach (string s in Vars)
+				{
+					Console.Write("{0}\t", s);
+				}
+				Console.WriteLine();
+				Console.WriteLine("**************************************************************************************");
 
-            Console.WriteLine("Parameters");
-            foreach (string s in Vars)
-            {
-                Console.Write("{0}\t", s);
-            }
-            Console.WriteLine();
-            Console.WriteLine("**************************************************************************************");
+				Console.WriteLine("Implies");
+				foreach (string s in Implies)
+				{
+					Console.Write("{0}\t", s);
+				}
 
-            Console.WriteLine("Implies");
-            foreach (string s in Implies)
-            {
-                Console.Write("{0}\t", s);
-            }
-
-            Console.WriteLine();
-            Console.WriteLine("**************************************************************************************");
-            Console.WriteLine("True-Vars");
-            foreach (string s in TrueVars)
-            {
-                Console.Write("{0}\t", s);
-            }
-            Console.WriteLine();
-            Console.WriteLine("**************************************************************************************");
-
+				Console.WriteLine();
+				Console.WriteLine("**************************************************************************************");
+				Console.WriteLine("True-Vars");
+				foreach (string s in TrueVars)
+				{
+					Console.Write("{0}\t", s);
+				}
+				Console.WriteLine();
+				Console.WriteLine("**************************************************************************************");
+			}
             // Populates List of Parameters with Parameter Objects with initial False states
 
             Boolean duplicate;
@@ -110,7 +112,7 @@ namespace AI_Assignment_2
 
                         duplicate = true;
 
-                        Console.WriteLine("Duplicate Param Avoided: " + s);
+						if(debug)  Console.WriteLine("Duplicate Param Avoided: " + s);
 
                         break;
                     }
@@ -128,12 +130,13 @@ namespace AI_Assignment_2
             //Add initial Ask Value to TrueParams Stack
             TrueParams.Push(ask);
 
-
-            foreach (Parameter s in Params)
-            {
-                Console.WriteLine("Created: " + s.GetName() + " With State " + s.GetState());
-            }
-
+			if (debug)
+			{
+				foreach (Parameter s in Params)
+				{
+					Console.WriteLine("Created: " + s.GetName() + " With State " + s.GetState());
+				}
+			}
             //Push initial Ask value to end of Validation List (should be first item)
             Validate.Push(ask);
 
@@ -148,15 +151,15 @@ namespace AI_Assignment_2
                 Check = Validate.Peek();
                 //Pop Current parameter for Validation from stack
                 Validate.Pop();
-                Console.WriteLine("Commence Validation of: " + Check);
-                if (findTheTruth(Check))
+               if(debug)  Console.WriteLine("Commence Validation of: " + Check);
+                if (findTheTruth(Check) && debug)
                 {
                     Console.WriteLine(Check + " Validated");
 
                 }
                 else
                 {
-                    Console.WriteLine("Error: findTheTruth did not return True for: " + Check);
+					if(debug)  Console.WriteLine("Error: findTheTruth did not return True for: " + Check);
                 }
 
             }
@@ -183,13 +186,14 @@ namespace AI_Assignment_2
 	
 
 
-		public BackwardChain(List<string> imp, List<string> vari, List<string> _truevars, string asking)
+		public BackwardChain(List<string> imp, List<string> vari, List<string> _truevars, bool printme,string asking)
 		{
             Implies = imp;
             Vars = vari;
-            ask = asking;  //assigns hardcoded "d" from Program
+            ask = asking;  //assigns ask from Program
             TruthCount = 0;
             TrueVars = _truevars;
+			debug = printme;
 			Console.WriteLine(BuildTT());
 
 		}

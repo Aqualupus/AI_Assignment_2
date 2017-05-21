@@ -22,7 +22,7 @@ namespace AI_Assignment_2
 
 			//Console.WriteLine(TT.TruTab());
 
-			BackwardChain BC = new BackwardChain(KB.Implies, KB.Vars, KB.TrueVars, KB.ASK());
+			BackwardChain BC = new BackwardChain(KB.Implies, KB.Vars, KB.TrueVars, false, KB.ASK());
 			Console.ReadLine();
 		}
 	}
