@@ -28,52 +28,108 @@ namespace AI_Assignment_2
 		/// <returns><c>true</c>, if the truth was found, <c>false</c> otherwise.</returns>
 		/// <param name="check">Check.</param>
         private Boolean findTheTruth(string check){
+            
             List<string> result = new List<string>();
             string[] temp;
+            string[] tempAND;
+            foreach (string s in Implies)
+            {
 
-			foreach (string s in Implies)
-			{
+                if (debug) Console.WriteLine("Check if Implies Statement: " + s + " contains: " + check);
 
-				if(debug) Console.WriteLine("Check if Implies Statement: " + s + " contains: " + check);
+                //looks for the check variable in Horn clauses.
+                if (s.Contains(check))
+                {
+                    if (debug) Console.WriteLine("Found that: " + s + " contains: " + check);
 
-				//looks for the check variable in Horn clauses.
-				if (s.Contains(check))
-				{
-                  if(debug)   Console.WriteLine("Found that: " + s + " contains: " + check);
-
-					temp = s.Split('=');              //separate variables into temp string array
-					temp[1] = temp[1].TrimStart('>'); //strip second element of ">"
-					temp[1] = temp[1].TrimStart(' ');
+                    temp = s.Split('=');              //separate variables into temp string array
+                    temp[1] = temp[1].TrimStart('>'); //strip second element of ">"
+                    temp[1] = temp[1].TrimStart(' ');
 
                     //Validate if matched on right of Horn clause
-                    if(temp[1].Contains(check)){
-                        
-  		                // Find Parameter that matches implicit Horn clause driver, set to True
-		                // If already True, report to Console
-		                foreach (Parameter p in Params){
-		                    if(p.GetName()==temp[0]){
-		                        if(p.GetState()){
-		                          if(debug)   Console.WriteLine("Attempted: " + p.GetName() + " = " + "True. Already True.");
-		                        }
-		                        
-		                        else{
-		                           if(debug)  Console.WriteLine("Setting to True: " + temp[0]);
-		                            p.SetState(true);
-		                            TrueParams.Push(temp[0]);
-		                            TruthCount++;
+                    if (temp[1].Contains(check))
+                    {
+                        if (temp[0].Contains("&")){
 
-		                            //Add the identified True parameter to the Validate queue
-		                            Validate.Push(temp[0]);
-		                          if(debug)   Console.WriteLine("Adding to Validate stack: " + temp[0]);
 
-		                        }
-		                    }
-		                }
+							// separate variables into temp string array
+							tempAND = temp[0].Split('&');
+                            if (debug) Console.WriteLine("Breaking up " + temp[0] + " into " + tempAND[0] + " & " + tempAND[1]);
+							// strip first element of " "
+                            tempAND[0] = tempAND[0].TrimEnd(' ');   
+							tempAND[0] = tempAND[0].TrimStart(' ');
+
+							// strip second element of " "
+							tempAND[1] = tempAND[1].TrimEnd(' ');   
+							tempAND[1] = tempAND[1].TrimStart(' ');
+							
+                            foreach (String st in tempAND){
+								
+                                if (truthValidator(st))
+								{
+									
+                                    if (debug) Console.WriteLine("Completed Validation: " + st);
+
+								}
+							}
+
+						}
+
+                        else{
+							if (truthValidator(temp[0]))
+							{
+								if (debug) Console.WriteLine("Completed Validation: " + temp[0]);
+
+							}
+						}
+						
                     }
+                }
+            }
+            return true;
+        }
+
+		/// <summary>
+		/// Validates known true variables against Implies statements and parameter list.
+        /// Assigns true state where true state is determined.
+		/// </summary>
+		/// <returns><c>true</c>, when complete, <c>false</c> otherwise.</returns>
+		/// <param name="component">Component.</param>
+		public Boolean truthValidator(String component){
+			
+            // Find Parameter that matches implicit Horn clause driver, set to True
+			// If already True, report to Console
+			foreach (Parameter p in Params)
+			{
+
+				// Validate Loop for equals horn clause
+				if (debug) Console.WriteLine("Does: " + p.GetName() + " == " + component);
+
+				if (p.GetName() == component)
+				{
+					if (p.GetState())
+					{
+						if (debug) Console.WriteLine("Attempted: " + p.GetName() + " = " + "True. Already True.");
+					}
+
+					else
+					{
+						if (debug) Console.WriteLine("Setting to True: " + component);
+						p.SetState(true);
+						TrueParams.Push(component);
+						TruthCount++;
+
+						//Add the identified True parameter to the Validate queue
+						Validate.Push(component);
+						if (debug) Console.WriteLine("Adding to Validate stack: " + component);
+
+					}
 				}
+
 			}
             return true;
         }
+
 
 
         public string BuildTT()
