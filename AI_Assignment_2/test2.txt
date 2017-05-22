@@ -1,0 +1,3 @@
+croaks&eatsFlies => frog; chirps&sings => canary; frog => green; canary => yellow; croaks; eatsflies;
+ASK
+yellow
