@@ -56,7 +56,8 @@ namespace AI_Assignment_2
 				while (endgoal.Count > 0)
 				{
 					List<string> removablelist = implies;
-					for (int i = 0; i < removablelist.Count;i++)
+					int i;
+					for ( i = 0; i < removablelist.Count;i++)
 					{
 						if (removablelist[i].Contains(checking))
 						{
@@ -82,7 +83,12 @@ namespace AI_Assignment_2
 									string[] othertemp = temp[0].Split('&');
 									if (othertemp[0] != checking)
 									{
-										if (!vaildvars.Contains(othertemp[0])) getout = true;
+										if (!vaildvars.Contains(othertemp[0]))
+										{
+											getout = true;
+											//endgoal.Clear();
+											break;
+										}
 										//is the other variable in the list and true?
 										//do I implement a backwards chaining algorithm here? 
 									}
@@ -107,7 +113,9 @@ namespace AI_Assignment_2
 
 
 						}
+						if (i == removablelist.Count) endgoal.Clear();
 					}
+
 					if (checking == ask || getout)
 					{
 						break;
@@ -127,6 +135,7 @@ namespace AI_Assignment_2
 				//reverse the list first
 				List<string> rightorder = new List<string>();
 				rightorder = endgoal.ToList();
+				//rightorder.Add("other");
 				foreach (string s in checkthese) rightorder.Add(s);
 				rightorder.Reverse();
 				foreach (String s in rightorder)
