@@ -21,8 +21,12 @@ namespace AI_Assignment_2
 			ForwardChain fwdChain =  new ForwardChain(KB.Implies, KB.Vars, KB.TrueVars, KB.CondVars, true,KB.ASK());
 
 			//Console.WriteLine(TT.TruTab());
-			Console.WriteLine(fwdChain.FwdChain());
-			//BackwardChain BC = new BackwardChain(KB.Implies, KB.Vars, KB.TrueVars, false, KB.ASK());
+			
+            Console.WriteLine("ForwardChain");
+            Console.WriteLine(fwdChain.FwdChain());
+
+            Console.WriteLine("BackwardChain");
+            BackwardChain BC = new BackwardChain(KB.Implies, KB.Vars, KB.TrueVars, false, KB.ASK());
 			Console.ReadLine();
 		}
 	}
