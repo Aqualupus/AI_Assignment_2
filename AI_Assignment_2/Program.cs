@@ -14,7 +14,7 @@ namespace AI_Assignment_2
 	//		BuildKB KB = new BuildKB("test2.txt");
 
 
-			BuildKB KB = new BuildKB("test1.txt");
+			BuildKB KB = new BuildKB("test2.txt");
 			//first the list of implies. then the variables then the true variables, then the conditional variables
 			//then the debug mode and then the ask
 			//TruthTable TT = new TruthTable(KB.Implies, KB.Vars, KB.TrueVars, KB.CondVars, true,KB.ASK());
