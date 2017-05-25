@@ -15,8 +15,13 @@ namespace AI_Assignment_2
 		//not too keen on using a list for this. Can't really think of anything better though. 
 		public List<string> Implies = new List<string>();
 		public List<string> Vars = new List<string>();
+		public List<string> CondVars = new List<string>();
 		public List<string> TrueVars = new List<string>();
 
+		public string ASK()
+		{
+			return _ask;
+		}
 		/// <summary>
 		/// Parses the Knowledge Base from the text file.
 		/// </summary>
@@ -46,7 +51,15 @@ namespace AI_Assignment_2
 				Console.WriteLine(e.Message);
 				return false;
 			}
+			for (int i = 0; i < _kbbits.Count; i++)
+			{
+				if (_kbbits[i] == "")
+				{
+					_kbbits.RemoveAt(i);
+				}
+			}
 			//kinda don't need these variables
+			//maybe make the way we read the file better form here
 			_kb = _kbbits[1];
 			_ask = _kbbits[3];
 			return true;
@@ -56,128 +69,122 @@ namespace AI_Assignment_2
 		/// </summary>
 		private void build()
 		{
-			
-			// and imply negate neg  EI     neg  union
-			string specChars =  "& => ¬ ^ <=> ! ||";
-			//first split them up into statements and variables
-			List<string> allTheBits = new List<string>();
-			allTheBits = _kb.Split(';').ToList();
-			List<string> seperateMe = new List<string>();
-			foreach (string s in allTheBits)
+			//by splitting at ; you create an empty value at the end.
+			_allbits = _kb.Split(';').ToList();
+			_allbits.RemoveAt(_allbits.Count-1);
+			List<string> movehere = new List<string>();
+			for (int i = 0; i < _allbits.Count;i++)
 			{
-				// breakdown does implication first giving A => B
-				// then it looks at A and checks if it contains any logical operators
 
-				Console.WriteLine(s);
-				//get rid of any spaces
+				if (_allbits[i].Contains("or")) _allbits[i]=_allbits[i].Replace("or", "|");
+				if (_allbits[i].Contains("and"))_allbits[i]= _allbits[i].Replace("and", "&");
+				if (_allbits[i].Contains("not")) _allbits[i]=_allbits[i].Replace("not", "!");
+				if (_allbits[i].Contains("OR"))
+				{
+					
+					_allbits[i] = _allbits[i].Replace("OR", "|");
 
-				//is it an implication?
+				}
+				if (_allbits[i].Contains("AND")) _allbits[i]=_allbits[i].Replace("AND", "&");
+				if (_allbits[i].Contains("NOT")) _allbits[i]=_allbits[i].Replace("NOT", "!");
+				if (_allbits[i].Contains("¬"))_allbits[i]= _allbits[i].Replace("¬", "!");
+				if (_allbits[i].Contains("||")) _allbits[i]=_allbits[i].Replace("||", "!");
+				if (_allbits[i].Contains("⊃")) _allbits[i]=_allbits[i].Replace("⊃", "=>");
+				if (_allbits[i].Contains("~")) _allbits[i]=_allbits[i].Replace("~", "!");
+				if (_allbits[i].Contains("∧")) _allbits[i]=_allbits[i].Replace("∧", "&");
+				if (_allbits[i].Contains(".")) _allbits[i]=_allbits[i].Replace(".", "&");
+				if (_allbits[i].Contains("∨")) _allbits[i]=_allbits[i].Replace("∨", "|");
+				if (_allbits[i].Contains("+")) _allbits[i]=_allbits[i].Replace("+", "|");
+
+
+
+			}
+			//remove all the spaces.
+			foreach (string s in _allbits)
+			{
+				string temp = "";
+				for (int i = 0; i < s.Length; i++)
+				{
+					if (s[i] != ' ')
+					{
+						temp += s[i].ToString();
+					}
+				}
+				//temp = temp.TrimStart(' ');
+				//Console.WriteLine("<{0}>", temp);
+				movehere.Add(temp);
+
+			}
+			//copy cleaner variables to the _allbits list
+			_allbits = movehere;
+
+
+			//split up the variables into usable bits
+			foreach (string s in _allbits)
+			{
 				if (s.Contains("=>"))
 				{
 					Implies.Add(s);
-					//Console.WriteLine(s);
-
-					// left is the first part of the implication
-					// right is the second part of the implication
-					string left = "";
-					string right = "";
-
-					string[] temp = s.Split('=');
-					left = temp[0];
-					right = temp[1];
-
-					left = left.TrimEnd(' ');
-					left = left.TrimStart(' ');
-					right = right.TrimEnd(' ');
-					right = right.TrimStart(' ');
-					right = right.TrimStart('>');
-					//Console.WriteLine("{0} and {1}", left, right);
-
-
-					//now parse the variables.
-					if (left.Contains('&'))
+					string[] splitem = s.Split('=');
+					splitem[1] = splitem[1].TrimStart('>');
+					splitem[0] = splitem[0].TrimStart('!');
+					splitem[1] = splitem[1].TrimStart('!');
+					if (!Vars.Contains(splitem[0]) && !splitem[0].Contains("&") && !splitem[0].Contains("|") )
+						Vars.Add(splitem[0]);
+					if (!Vars.Contains(splitem[1]) && !splitem[1].Contains("&") && !splitem[1].Contains("|") && !splitem[1].Contains('!')) 
+						Vars.Add(splitem[1]);
+					//split them at the and
+					if (splitem[0].Contains("&"))
 					{
-						//do stuff
-						seperateMe.Add(left);
-						if (!Vars.Contains(left))
-							Vars.Add(left);
+						CondVars.Add(splitem[0]);
+						string[] temp = splitem[0].Split('&');
+						if (!Vars.Contains(temp[0]) && !temp[0].Contains('!'))
+						Vars.Add(temp[0]);
+						if (!Vars.Contains(temp[1]) && !temp[1].Contains('!'))
+						Vars.Add(temp[1]);
 					}
-					else
+					if (splitem[1].Contains("&"))
 					{
-						if (!Vars.Contains(left))
-							Vars.Add(left);
+						CondVars.Add(splitem[1]);
+						string[] temp = splitem[1].Split('&');
+						if (!Vars.Contains(temp[0]) && !temp[0].Contains('!'))
+							Vars.Add(temp[0]);
+						if (!Vars.Contains(temp[1]) && !temp[1].Contains('!'))
+						Vars.Add(temp[1]);
 					}
-					if (right.Contains('&'))
+					//split them at the or
+					if (splitem[0].Contains("|"))
 					{
-						//do stuff
-						seperateMe.Add(right);
-						if (!Vars.Contains(right))
-							Vars.Add(right);
+						CondVars.Add(splitem[0]);
+						string[] temp = splitem[0].Split('|');
+						if (!Vars.Contains(temp[0]) && !temp[0].Contains('!'))
+						Vars.Add(temp[0]);
+						if (!Vars.Contains(temp[1]) && !temp[1].Contains('!'))
+						Vars.Add(temp[1]);
 					}
-					else
+					if (splitem[1].Contains("|"))
 					{
-						if (!Vars.Contains(right))
-							Vars.Add(right);
+						CondVars.Add(splitem[1]);
+						string[] temp = splitem[1].Split('|');
+						if (!Vars.Contains(temp[0]) && !temp[0].Contains('!'))
+						Vars.Add(temp[0]);
+						if (!Vars.Contains(temp[1])&& !temp[1].Contains('!'))
+						Vars.Add(temp[1]);
 					}
-
 
 				}
 				else
 				{
-					Vars.Add(s);
-				}
-				foreach (string sep in seperateMe)
-				{
-					string newVar = "";
-					foreach (char c in sep)
+					if (!s.Contains('!'))
 					{
-						if (c != ' ')
-						{
-							if (c == '&')
-							{
-								if (!Vars.Contains(newVar))
-									Vars.Add(newVar);
-								newVar = "";
-							}
-							else
-							{
-								newVar += c.ToString();
-							}
-							//if (newVar != "")
-							//{
-							//	if (!Vars.Contains(newVar))
-							//		Vars.Add(newVar);
-							//}
-						}
+						if (!Vars.Contains(s)) Vars.Add(s);
+						if (!TrueVars.Contains(s)) TrueVars.Add(s);
 					}
-					if (!Vars.Contains(newVar))
-									Vars.Add(newVar);
-
 				}
-				//just plain true variables
-				//so. I want to see if there are any spec chars in here at all.
-				if (!s.Contains("&") && !s.Contains("=>"))
-				{
-					string temp;
-					temp = s.TrimStart(' ');
-					temp = temp.TrimEnd(' ');
-					TrueVars.Add(temp);
-				}
-
-				//what are the variables? ¬
-				//this bit is going to get messy
-
-				//some variable names are many chars long so don't break them
-
 			}
-		
-			Console.WriteLine("*******************\n Variables");
-			Console.WriteLine("*******************");
-			foreach (string v in Vars)
-				{
-				Console.Write("{0}  ",v);
-				}
-			Console.WriteLine();
+
+
+
 
 		}
 

@@ -38,6 +38,7 @@
     <Compile Include="TruthTable.cs" />
     <Compile Include="ForwardChain.cs" />
     <Compile Include="BackwardChain.cs" />
+    <Compile Include="Parameter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
