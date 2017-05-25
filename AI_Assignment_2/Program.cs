@@ -15,13 +15,13 @@ namespace AI_Assignment_2
 
 			if (args.Length == 0)
 			{
-				BuildKB KB = new BuildKB("test1.txt");
-				//TruthTable TT = new TruthTable(KB.Implies, KB.Vars, KB.TrueVars, KB.CondVars, true,KB.ASK());
+				BuildKB KB = new BuildKB("test4.txt");
+				TruthTable TT = new TruthTable(KB.Implies, KB.Vars, KB.TrueVars, KB.CondVars, true,KB.ASK());
 				//ForwardChain fwdChain =  new ForwardChain(KB.Implies, KB.Vars, KB.TrueVars, KB.CondVars, true,KB.ASK());
-				//Console.WriteLine(TT.TruTab());
+				Console.WriteLine(TT.TruTab());
 
 				//Console.WriteLine(fwdChain.FwdChain());
-				BackwardChain BC = new BackwardChain(KB.Implies, KB.Vars, KB.TrueVars, true, KB.ASK());
+				//BackwardChain BC = new BackwardChain(KB.Implies, KB.Vars, KB.TrueVars, true, KB.ASK());
 			}
 			else
 			{

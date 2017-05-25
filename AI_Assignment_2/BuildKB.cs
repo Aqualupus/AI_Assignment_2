@@ -73,6 +73,32 @@ namespace AI_Assignment_2
 			_allbits = _kb.Split(';').ToList();
 			_allbits.RemoveAt(_allbits.Count-1);
 			List<string> movehere = new List<string>();
+			for (int i = 0; i < _allbits.Count;i++)
+			{
+
+				if (_allbits[i].Contains("or")) _allbits[i]=_allbits[i].Replace("or", "|");
+				if (_allbits[i].Contains("and"))_allbits[i]= _allbits[i].Replace("and", "&");
+				if (_allbits[i].Contains("not")) _allbits[i]=_allbits[i].Replace("not", "!");
+				if (_allbits[i].Contains("OR"))
+				{
+					
+					_allbits[i] = _allbits[i].Replace("OR", "|");
+
+				}
+				if (_allbits[i].Contains("AND")) _allbits[i]=_allbits[i].Replace("AND", "&");
+				if (_allbits[i].Contains("NOT")) _allbits[i]=_allbits[i].Replace("NOT", "!");
+				if (_allbits[i].Contains("¬"))_allbits[i]= _allbits[i].Replace("¬", "!");
+				if (_allbits[i].Contains("||")) _allbits[i]=_allbits[i].Replace("||", "!");
+				if (_allbits[i].Contains("⊃")) _allbits[i]=_allbits[i].Replace("⊃", "=>");
+				if (_allbits[i].Contains("~")) _allbits[i]=_allbits[i].Replace("~", "!");
+				if (_allbits[i].Contains("∧")) _allbits[i]=_allbits[i].Replace("∧", "&");
+				if (_allbits[i].Contains(".")) _allbits[i]=_allbits[i].Replace(".", "&");
+				if (_allbits[i].Contains("∨")) _allbits[i]=_allbits[i].Replace("∨", "|");
+				if (_allbits[i].Contains("+")) _allbits[i]=_allbits[i].Replace("+", "|");
+
+
+
+			}
 			//remove all the spaces.
 			foreach (string s in _allbits)
 			{
@@ -91,6 +117,7 @@ namespace AI_Assignment_2
 			}
 			//copy cleaner variables to the _allbits list
 			_allbits = movehere;
+
 
 			//split up the variables into usable bits
 			foreach (string s in _allbits)

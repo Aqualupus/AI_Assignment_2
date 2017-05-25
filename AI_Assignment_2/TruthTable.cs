@@ -138,7 +138,6 @@ namespace AI_Assignment_2
 
 						if (temp[0].Contains('!'))
 						{
-							//do a thing here.
 							s[6] = "false";
 							temp[0] = temp[0].TrimStart('!');
 						}
@@ -146,7 +145,6 @@ namespace AI_Assignment_2
 
 						if (temp[1].Contains('!'))
 						{
-							//do a thing here.
 							s[7] = "false";
 							temp[1] = temp[1].Trim('!');
 						}
@@ -158,7 +156,6 @@ namespace AI_Assignment_2
 						s[2] = "|";
 						if (temp[0].Contains('!'))
 						{
-							//do a thing here.
 							s[6] = "false";
 							temp[0] = temp[0].TrimStart('!');
 						}
@@ -166,7 +163,6 @@ namespace AI_Assignment_2
 
 						if (temp[1].Contains('!'))
 						{
-							//do a thing here.
 							s[7] = "false";
 							temp[1] = temp[1].Trim('!');
 						}
